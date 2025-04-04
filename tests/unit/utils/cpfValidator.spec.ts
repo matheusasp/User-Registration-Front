@@ -1,4 +1,3 @@
-
 import { describe, test, expect } from 'vitest'
 
 const validateCPF = (cpf: string): boolean => {
@@ -8,7 +7,6 @@ const validateCPF = (cpf: string): boolean => {
     return false;
   }
   
-  // First check digit
   let sum = 0;
   for (let i = 0; i < 9; i++) {
     sum += parseInt(cleanCPF.charAt(i)) * (10 - i);
@@ -17,7 +15,6 @@ const validateCPF = (cpf: string): boolean => {
   let remainder = 11 - (sum % 11);
   const digit1 = remainder >= 10 ? 0 : remainder;
   
-  // Second check digit
   sum = 0;
   for (let i = 0; i < 10; i++) {
     sum += parseInt(cleanCPF.charAt(i)) * (11 - i);
@@ -46,17 +43,16 @@ describe('CPF Validator', () => {
   });
   
   test('retorna false para CPFs inválidos', () => {
-    // CPFs inválidos
     const invalidCPFs = [
-      '123.456.789-00', // Dígitos verificadores incorretos
+      '123.456.789-00',
       '12345678900',
-      '111.111.111-11', // Todos os dígitos iguais
+      '111.111.111-11',
       '222.222.222-22',
       '999.999.999-99',
-      '123.456.78', // Tamanho incorreto
+      '123.456.78',
       '123456',
-      'abc.def.ghi-jk', // Não numérico
-      '', // Vazio
+      'abc.def.ghi-jk',
+      '',
     ];
     
     invalidCPFs.forEach(cpf => {
@@ -65,7 +61,6 @@ describe('CPF Validator', () => {
   });
   
   test('manipula formatos e caracteres especiais corretamente', () => {
-    // Mesmo CPF em diferentes formatos
     const validCPF = '529.982.247-25';
     const formats = [
       '529.982.247-25',

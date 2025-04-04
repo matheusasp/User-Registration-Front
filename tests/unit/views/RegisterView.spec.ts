@@ -6,7 +6,6 @@ import { useUserStore } from '@/stores/user'
 import { nextTick } from 'vue'
 import { describe, beforeEach, test, expect, vi } from 'vitest'
 
-// O mock de vue-router já foi definido em setup.ts
 const mockPush = vi.fn()
 vi.mock('vue-router', () => ({
   useRouter: () => ({
@@ -19,15 +18,12 @@ describe('RegisterView.vue', () => {
   let userStore: any
 
   beforeEach(() => {
-    // Resetar os mocks entre os testes
     vi.clearAllMocks()
 
-    // Criar um pinia de teste
     const pinia = createTestingPinia({
       createSpy: vi.fn
     })
 
-    // Montar o componente com as props necessárias
     wrapper = mount(RegisterView, {
       props: {
         userId: 123
@@ -35,7 +31,6 @@ describe('RegisterView.vue', () => {
       global: {
         plugins: [pinia],
         directives: {
-          // Mock para a diretiva v-mask
           mask: {
             mounted: () => {}
           }
@@ -43,7 +38,6 @@ describe('RegisterView.vue', () => {
       }
     })
 
-    // Obtém o store do usuário para poder espiá-lo
     userStore = useUserStore()
   })
 
@@ -56,28 +50,23 @@ describe('RegisterView.vue', () => {
   })
 
   test('exibe mensagens de erro para campos vazios', async () => {
-    // Clicar no botão de envio sem preencher os campos
     await wrapper.find('form').trigger('submit')
 
     await nextTick()
 
-    // Verificar mensagens de erro
     expect(wrapper.find('.error-text').exists()).toBe(true)
     expect(wrapper.findAll('.error-text').length).toBeGreaterThan(0)
   })
 
   test('valida o CPF corretamente', async () => {
-    // Preencher formulário com CPF inválido
     await wrapper.find('#name').setValue('Teste Usuario')
     await wrapper.find('#birth_date').setValue('1990-01-01')
-    await wrapper.find('#cpf').setValue('111.111.111-11') // CPF inválido
+    await wrapper.find('#cpf').setValue('111.111.111-11')
 
-    // Enviar formulário
     await wrapper.find('form').trigger('submit')
     
     await nextTick()
 
-    // Deve ter erro no CPF
     const cpfErrorElements = wrapper.findAll('.error-text')
     const hasCpfError = Array.from(cpfErrorElements).some((el: any) => 
       el.text().includes('valid CPF'))
@@ -85,22 +74,18 @@ describe('RegisterView.vue', () => {
   })
 
   test('valida data de nascimento futura corretamente', async () => {
-    // Definir data futura
     const tomorrow = new Date()
     tomorrow.setDate(tomorrow.getDate() + 1)
-    const futureDate = tomorrow.toISOString().split('T')[0] // Formato YYYY-MM-DD
+    const futureDate = tomorrow.toISOString().split('T')[0]
 
-    // Preencher formulário com data futura
     await wrapper.find('#name').setValue('Teste Usuario')
     await wrapper.find('#birth_date').setValue(futureDate)
-    await wrapper.find('#cpf').setValue('123.456.789-09') // CPF formatado
+    await wrapper.find('#cpf').setValue('123.456.789-09')
 
-    // Enviar formulário
     await wrapper.find('form').trigger('submit')
     
     await nextTick()
 
-    // Deve ter erro na data de nascimento
     const dateErrorElements = wrapper.findAll('.error-text')
     const hasDateError = Array.from(dateErrorElements).some((el: any) => 
       el.text().includes('future'))
@@ -108,33 +93,26 @@ describe('RegisterView.vue', () => {
   })
 
   test('submete o formulário com sucesso', async () => {
-    // Mock de completeRegistration para retornar sucesso
     userStore.completeRegistration.mockResolvedValue(true)
 
-    // Preencher formulário com dados válidos (CPF válido formatado)
     await wrapper.find('#name').setValue('Teste Usuario')
     await wrapper.find('#birth_date').setValue('1990-01-01')
-    await wrapper.find('#cpf').setValue('529.982.247-25') // CPF válido
+    await wrapper.find('#cpf').setValue('529.982.247-25')
 
-    // Enviar formulário
     await wrapper.find('form').trigger('submit')
     
-    // Aguardar promessas assíncronas
     await flushPromises()
 
-    // Verificar se a função do store foi chamada corretamente
     expect(userStore.completeRegistration).toHaveBeenCalledWith(123, {
       name: 'Teste Usuario',
       birth_date: '1990-01-01',
       cpf: '529.982.247-25'
     })
 
-    // Verificar se foi redirecionado para a página de usuários
     expect(mockPush).toHaveBeenCalledWith({ name: 'users' })
   })
 
   test('exibe erro se o registro falhar', async () => {
-    // Mock de completeRegistration para retornar erro
     const errorMessage = 'Failed to register'
     userStore.completeRegistration.mockRejectedValue({
       response: {
@@ -144,24 +122,19 @@ describe('RegisterView.vue', () => {
       }
     })
 
-    // Preencher formulário com dados válidos
     await wrapper.find('#name').setValue('Teste Usuario')
     await wrapper.find('#birth_date').setValue('1990-01-01')
-    await wrapper.find('#cpf').setValue('529.982.247-25') // CPF válido
+    await wrapper.find('#cpf').setValue('529.982.247-25')
 
-    // Enviar formulário
     await wrapper.find('form').trigger('submit')
     
-    // Aguardar promessas assíncronas
     await flushPromises()
 
-    // Verificar se a mensagem de erro é exibida
     expect(wrapper.find('.error-message').text()).toBe(errorMessage)
     expect(mockPush).not.toHaveBeenCalled()
   })
 
   test('redireciona para login se não houver userId', async () => {
-    // Recriar o wrapper sem userId
     const pinia = createTestingPinia({
       createSpy: vi.fn
     })
@@ -185,7 +158,6 @@ describe('RegisterView.vue', () => {
     
     await flushPromises()
 
-    // Verificar se foi redirecionado para a página de login
     expect(mockPush).toHaveBeenCalledWith({ name: 'login' })
   })
 })
