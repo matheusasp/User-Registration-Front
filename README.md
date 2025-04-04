@@ -36,6 +36,7 @@ Este projeto consiste em um sistema de cadastro de usuários utilizando duas apl
 - Vue Router
 - Pinia
 - Sass (SCSS)
+- Vitest (testes)
 
 ### Outros
 - Docker (ambiente de desenvolvimento completo com Laravel, MySQL e Front-end)
@@ -85,8 +86,12 @@ Necessário configurar no .env as variáveis relacionadas ao e-mail e ao google
 Os testes unitários estão localizados em `tests/Feature` e `tests/Unit`:
 ```bash
 docker exec -it app php artisan test
+```
 
-
+### Front-end (Vitest)
+```bash
+docker exec -it frontend npm run test
+```
 
 ## 🖊️ Observações e Decisões Técnicas
 - Toda autenticação é tratada via back-end para segurança e controle de tokens

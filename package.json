@@ -23,6 +23,7 @@
     "vue-the-mask": "^0.11.1"
   },
   "devDependencies": {
+    "@pinia/testing": "^1.0.0",
     "@playwright/test": "^1.51.1",
     "@testing-library/vue": "^8.1.0",
     "@tsconfig/node22": "^22.0.1",
